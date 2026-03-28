@@ -1,0 +1,10 @@
+pandas
+numpy<2
+matplotlib
+seaborn
+scipy
+notebook
+ipywidgets
+scikit-learn
+tqdm
+implicit
