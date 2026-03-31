@@ -1,0 +1,9 @@
+# LaTeX thesis — local/build outputs and sources kept out of repo
+thesis.aux
+thesis.bbl
+thesis.blg
+references.bib
+thesis.fdb_latexmk
+thesis.pdf
+thesis.tex
+thesis.synctex.gz
