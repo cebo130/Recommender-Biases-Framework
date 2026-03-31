@@ -5,9 +5,6 @@ Thesis_Research/
 │   └── PROJECT_TREE.txt          <- this file
 ├── requirements.txt
 ├── requirements_optional_windows_build.txt
-├── thesis.tex
-├── references.bib
-├── build_thesis.ps1
 ├── run_all.py
 ├── run_all_datasets.py
 ├── run_takealot_full.py

@@ -6,7 +6,6 @@ Python experiments comparing **six recommenders** (k-NN, SVD, ALS, TF‑IDF, per
 |-------------|------|
 | Extended methodology, metrics glossary, troubleshooting | [**docs/PROJECT.md**](docs/PROJECT.md) |
 | Plain-text folder tree (copy/paste) | [**docs/PROJECT_TREE.txt**](docs/PROJECT_TREE.txt) |
-| LaTeX thesis chapter + bibliography | `thesis.tex`, `references.bib` |
 
 ---
 
@@ -21,7 +20,6 @@ Python experiments comparing **six recommenders** (k-NN, SVD, ALS, TF‑IDF, per
 - [Command reference](#command-reference)
 - [What gets produced](#what-gets-produced)
 - [Jupyter notebooks](#jupyter-notebooks)
-- [Build the PDF thesis](#build-the-pdf-thesis)
 - [Important caveats](#important-caveats)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
@@ -54,9 +52,6 @@ Thesis_Research/
 │   └── PROJECT.md                     # Long-form documentation
 ├── requirements.txt                   # Core Python dependencies
 ├── requirements_optional_windows_build.txt   # scikit-surprise (optional)
-├── thesis.tex                         # LaTeX thesis chapter
-├── references.bib                     # BibTeX references
-├── build_thesis.ps1                   # Windows: locate pdflatex and compile thesis.pdf
 │
 ├── run_all.py                         # Single public dataset: full pipeline
 ├── run_all_datasets.py                # All public datasets + combined outputs
@@ -126,7 +121,6 @@ find . -path ./.git -prune -o -print | head -200
 | **Python** 3.10+ | 3.11 recommended |
 | **Disk** | Several GB for MovieLens 1M + figures; Takealot can be large |
 | **RAM** | `ml-100k` is modest; `ml-1m` and Takealot need more headroom |
-| **LaTeX** (optional) | MiKTeX or TeX Live to compile `thesis.tex` → PDF |
 
 ---
 
@@ -194,7 +188,7 @@ python -c "import surprise; print('Surprise OK')"   # should work if step 4 succ
 
 - Populate **`data/take-a-lot-dataset/`** with at least **`products.csv`** and review CSVs as used by `standalone_takealot/takealot_loader.py`.
 - Alternatively set **`TAKEALOT_DATA_DIR`** to an absolute path containing the same files.
-- Related public context (workshop materials): [RecSys2025 Takealot GitHub](https://github.com/stefandominicus-takealot/RecSys2025) — your thesis `references.bib` may cite this; your actual CSV layout must match the loader.
+- Related public context (workshop materials): [RecSys2025 Takealot GitHub](https://github.com/stefandominicus-takealot/RecSys2025). Your actual CSV layout must match the loader.
 
 ---
 
@@ -295,22 +289,6 @@ Set **`DATASET_NAME`** in the notebook config cell, or use **`run_notebooks.py`*
 
 ---
 
-## Build the PDF thesis
-
-Requires **pdflatex** + **bibtex** (e.g. [MiKTeX](https://miktex.org/download) on Windows).
-
-```bash
-pdflatex thesis
-bibtex thesis
-pdflatex thesis
-pdflatex thesis
-```
-
-From repo root. On Windows, if `pdflatex` is not on PATH, run **`build_thesis.ps1`**.  
-**Overleaf:** upload `thesis.tex` and `references.bib`, set main file to `thesis.tex`.
-
----
-
 ## Important caveats
 
 1. **Surprise:** If `import surprise` fails, **`run_all.py`** uses **`_FallbackCF`** (global mean + biases) instead of real k-NN/SVD — **results are not comparable** to standard Surprise papers.
@@ -329,7 +307,6 @@ From repo root. On Windows, if `pdflatex` is not on PATH, run **`build_thesis.ps
 | `implicit` / ALS errors | `pip install implicit`; check scipy/numpy versions |
 | Empty or missing figures | Ensure the run completed; check `outputs/figures/` permissions |
 | Takealot not found | `--data-dir` or `TAKEALOT_DATA_DIR`; folder must contain `products.csv` |
-| `pdflatex` not recognized | Install MiKTeX/TeX Live; restart terminal; use `build_thesis.ps1` |
 
 More detail: [**docs/PROJECT.md**](docs/PROJECT.md).
 
@@ -337,4 +314,4 @@ More detail: [**docs/PROJECT.md**](docs/PROJECT.md).
 
 ## License
 
-Respect **dataset licenses** (MovieLens, Book-Crossing, Last.fm, Takealot). Code and thesis reuse: follow your **institution** and supervisor rules.
+Respect **dataset licenses** (MovieLens, Book-Crossing, Last.fm, Takealot). Academic and code reuse: follow your **institution** and supervisor rules.
