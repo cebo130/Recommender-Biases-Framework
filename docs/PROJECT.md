@@ -1,6 +1,6 @@
 # Project documentation — Recommender-system bias, fairness, and feedback loops
 
-This file is the **long-form** companion to the root [README.md](../README.md). It explains goals, layout, data, commands, outputs, notebooks, the LaTeX thesis, metrics, methodology, and troubleshooting in full.
+This file is the **long-form** companion to the root [README.md](../README.md). It explains goals, layout, data, commands, outputs, notebooks, metrics, methodology, and troubleshooting in full.
 
 ---
 
@@ -14,7 +14,6 @@ This file is the **long-form** companion to the root [README.md](../README.md). 
 - [How to run experiments](#how-to-run-experiments)
 - [Outputs](#outputs)
 - [Notebooks](#notebooks)
-- [Thesis document (LaTeX)](#thesis-document-latex)
 - [Models and metrics (reference)](#models-and-metrics-reference)
 - [Important methodological notes](#important-methodological-notes)
 - [Troubleshooting](#troubleshooting)
@@ -57,9 +56,6 @@ Thesis_Research/
 │   └── PROJECT_TREE.txt      ← plain-text tree (duplicate of README)
 ├── requirements.txt
 ├── requirements_optional_windows_build.txt   # scikit-surprise (optional)
-├── thesis.tex
-├── references.bib
-├── build_thesis.ps1
 ├── run_all.py
 ├── run_all_datasets.py
 ├── run_takealot_full.py
@@ -108,7 +104,7 @@ Thesis_Research/
 
 ### Optional
 
-- **scikit-surprise** (`requirements_optional_windows_build.txt` on Windows): enables real **k-NN** and **SVD**. If the import fails, `run_all.py` sets `SURPRISE_AVAILABLE = False` and uses **`_FallbackCF`**, which is **not** equivalent to published Surprise benchmarks—always note this in reports and theses.
+- **scikit-surprise** (`requirements_optional_windows_build.txt` on Windows): enables real **k-NN** and **SVD**. If the import fails, `run_all.py` sets `SURPRISE_AVAILABLE = False` and uses **`_FallbackCF`**, which is **not** equivalent to published Surprise benchmarks—always note this in reports.
 
 ---
 
@@ -235,26 +231,6 @@ Set `DATASET_NAME` in the config cell or rely on `run_notebooks.py`.
 
 ---
 
-## Thesis document (LaTeX)
-
-- **`thesis.tex`** — Methods, notation, metrics, results tables, TikZ diagrams, algorithms, bibliography.
-- **`references.bib`** — BibTeX database.
-
-**Local build** (MiKTeX or TeX Live; run from repo root):
-
-```bash
-pdflatex thesis
-bibtex thesis
-pdflatex thesis
-pdflatex thesis
-```
-
-**Windows:** If `pdflatex` is not found, install [MiKTeX](https://miktex.org/download), restart the terminal, or run **`build_thesis.ps1`** which searches common install paths.
-
-**Overleaf:** Upload `thesis.tex` and `references.bib`; set the main document to `thesis.tex`.
-
----
-
 ## Models and metrics (reference)
 
 ### Macro bias (`run_macro_bias`)
@@ -297,7 +273,6 @@ pdflatex thesis
 
 | Issue | Suggestion |
 |-------|------------|
-| `pdflatex` / `bibtex` not recognized | Install MiKTeX or TeX Live; restart shell; run `build_thesis.ps1`. |
 | `No module named 'surprise'` | `pip install scikit-surprise` or optional requirements file; on Windows you may need MSVC build tools if no wheel. |
 | ALS errors or implausible ALS metrics | Check stderr; confirm `implicit` version; inspect matrix indexing logs. |
 | Slow runs or memory errors | Use `ml-100k`; avoid running all models on huge catalogs until validated. |
@@ -308,17 +283,6 @@ pdflatex thesis
 ## License and citation
 
 - Obey **dataset licenses** (MovieLens, Book-Crossing, Last.fm / HetRec, Takealot).
-- Thesis and code reuse: follow your **university** and supervisor guidelines.
+- Academic and code reuse: follow your **institution** and supervisor guidelines.
 
-Example BibTeX placeholder for your own thesis (edit fields):
-
-```bibtex
-@mastersthesis{yourthesis2026,
-  author = {Your Name},
-  title  = {Quantifying Popularity Bias and User-Centric Effects in Recommender Systems},
-  school = {Your University},
-  year   = {2026}
-}
-```
-
-For academic process questions, use your supervisor or institutional repository, not this document.
+For process questions, use your supervisor or institutional policies, not this document.
