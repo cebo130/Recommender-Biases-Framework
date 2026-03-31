@@ -53,7 +53,8 @@ This file is the **long-form** companion to the root [README.md](../README.md). 
 Thesis_Research/
 ├── README.md                 ← short GitHub entry (links here)
 ├── docs/
-│   └── PROJECT.md            ← this file
+│   ├── PROJECT.md            ← this file
+│   └── PROJECT_TREE.txt      ← plain-text tree (duplicate of README)
 ├── requirements.txt
 ├── requirements_optional_windows_build.txt   # scikit-surprise (optional)
 ├── thesis.tex
