@@ -1,0 +1,52 @@
+\contentsline {chapter}{\numberline {1}Introduction}{5}{chapter.1}%
+\contentsline {paragraph}{Contributions (within this chapter).}{5}{section*.2}%
+\contentsline {chapter}{\numberline {2}Background and Related Work}{7}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Collaborative filtering}{7}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Content-based filtering}{7}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Beyond-accuracy objectives}{7}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Ranking metrics}{7}{section.2.4}%
+\contentsline {chapter}{\numberline {3}Datasets and Preprocessing}{9}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Public benchmarks}{9}{section.3.1}%
+\contentsline {paragraph}{MovieLens.}{9}{section*.3}%
+\contentsline {paragraph}{Last.fm.}{9}{section*.4}%
+\contentsline {paragraph}{Book-Crossing.}{9}{section*.5}%
+\contentsline {section}{\numberline {3.2}$k$-core filtering}{9}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Takealot e-commerce reviews}{9}{section.3.3}%
+\contentsline {chapter}{\numberline {4}Algorithms}{11}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Notation}{11}{section.4.1}%
+\contentsline {section}{\numberline {4.2}User-based $k$-NN (Surprise)}{11}{section.4.2}%
+\contentsline {section}{\numberline {4.3}SVD (biased probabilistic matrix factorization)}{11}{section.4.3}%
+\contentsline {section}{\numberline {4.4}ALS (implicit library)}{11}{section.4.4}%
+\contentsline {section}{\numberline {4.5}TF--IDF profile model}{11}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Per-user logistic regression}{11}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Random forest on IDs}{12}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Experimental Design}{13}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Experiment A: Macro-bias quantification}{13}{section.5.1}%
+\contentsline {paragraph}{Gini coefficient.}{13}{section*.8}%
+\contentsline {paragraph}{Average popularity of recommendations (ARP).}{13}{section*.9}%
+\contentsline {paragraph}{Catalog coverage.}{13}{section*.10}%
+\contentsline {paragraph}{Spearman correlation.}{14}{section*.11}%
+\contentsline {paragraph}{Popularity percentile and tail share.}{14}{section*.12}%
+\contentsline {paragraph}{Metadata-token entropy.}{14}{section*.13}%
+\contentsline {paragraph}{RMSE (where defined).}{14}{section*.14}%
+\contentsline {section}{\numberline {5.2}Experiment B: User-centric stratification}{14}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Experiment C: Feedback simulation}{15}{section.5.3}%
+\contentsline {chapter}{\numberline {6}Implementation Notes}{17}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Software stack}{17}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Reproducibility commands}{17}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Known limitations}{17}{section.6.3}%
+\contentsline {chapter}{\numberline {7}Results}{19}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Macro bias (public benchmarks)}{19}{section.7.1}%
+\contentsline {paragraph}{Observations.}{20}{section*.21}%
+\contentsline {section}{\numberline {7.2}Macro bias (Takealot)}{20}{section.7.2}%
+\contentsline {section}{\numberline {7.3}User-centric metrics}{20}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Feedback simulation}{22}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Generated figures}{22}{section.7.5}%
+\contentsline {chapter}{\numberline {8}Discussion}{25}{chapter.8}%
+\contentsline {paragraph}{Popularity bias is model-dependent.}{25}{section*.32}%
+\contentsline {paragraph}{User-centric gaps are not uniform.}{25}{section*.33}%
+\contentsline {paragraph}{Feedback dynamics depend on domain and model.}{25}{section*.34}%
+\contentsline {paragraph}{Metadata entropy vs. coverage.}{25}{section*.35}%
+\contentsline {chapter}{\numberline {9}Conclusion}{27}{chapter.9}%
+\contentsline {chapter}{\numberline {A}Complete Macro-Bias Table (All Public Benchmarks)}{29}{appendix.A}%
+\contentsline {chapter}{\numberline {B}Algorithmic Sketches}{31}{appendix.B}%

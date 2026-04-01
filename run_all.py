@@ -41,6 +41,13 @@ SRC_DIR = ROOT / "src"
 if str(SRC_DIR) not in __import__("sys").path:
     __import__("sys").path.append(str(SRC_DIR))
 
+from statistical_tests import (  # noqa: E402
+    mann_whitney_pvalue,
+    per_user_ndcg_by_segment,
+    per_user_rmse_by_segment,
+    significance_flag,
+    welch_ttest_pvalue,
+)
 from utils import ensure_output_dirs, load_dataset  # noqa: E402
 
 
@@ -774,12 +781,13 @@ def run_user_centric(
             out[seg] = float(np.sqrt(mean_squared_error(d["true"], d["pred"]))) if len(d) else np.nan
         return out
 
+    rel_by_user = test_df.groupby("user_id")["item_id"].apply(set).to_dict()
+
     def segment_ndcg(recs):
-        rel = test_df.groupby("user_id")["item_id"].apply(set).to_dict()
         out = {}
         for seg in ["Niche", "Diverse", "Mainstream"]:
             users_seg = [u for u, s in segment_map.items() if s == seg and u in recs]
-            vals = [ndcg_at_k(recs[u], rel.get(u, set()), k=10) for u in users_seg]
+            vals = [ndcg_at_k(recs[u], rel_by_user.get(u, set()), k=10) for u in users_seg]
             out[seg] = float(np.mean(vals)) if vals else np.nan
         return out
 
@@ -787,6 +795,21 @@ def run_user_centric(
     for model_name in model_recs.keys():
         rmses = segment_rmse(model_preds.get(model_name, []))
         ndcgs = segment_ndcg(model_recs[model_name])
+        preds = model_preds.get(model_name, [])
+        niche_rmse, main_rmse = per_user_rmse_by_segment(preds, segment_map)
+        niche_ndcg, main_ndcg = per_user_ndcg_by_segment(
+            model_recs[model_name],
+            segment_map,
+            rel_by_user,
+            ndcg_at_k,
+            k=10,
+        )
+        p_rmse_mwu = mann_whitney_pvalue(niche_rmse, main_rmse, alternative="two-sided")
+        p_rmse_welch = welch_ttest_pvalue(niche_rmse, main_rmse)
+        p_rmse_niche_greater = mann_whitney_pvalue(niche_rmse, main_rmse, alternative="greater")
+        p_ndcg_mwu = mann_whitney_pvalue(niche_ndcg, main_ndcg, alternative="two-sided")
+        p_ndcg_welch = welch_ttest_pvalue(niche_ndcg, main_ndcg)
+        p_ndcg_niche_less = mann_whitney_pvalue(niche_ndcg, main_ndcg, alternative="less")
         rows_out.append(
             {
                 "model": model_name,
@@ -798,6 +821,18 @@ def run_user_centric(
                 "ndcg_mainstream": ndcgs.get("Mainstream", np.nan),
                 "delta_accuracy_rmse_niche_minus_mainstream": rmses.get("Niche", np.nan)
                 - rmses.get("Mainstream", np.nan),
+                "n_users_niche_rmse": int(len(niche_rmse)),
+                "n_users_mainstream_rmse": int(len(main_rmse)),
+                "p_mwu_rmse_niche_vs_mainstream": p_rmse_mwu,
+                "p_welch_rmse_niche_vs_mainstream": p_rmse_welch,
+                "p_mwu_rmse_niche_greater_mainstream": p_rmse_niche_greater,
+                "sig_rmse_mwu_005": significance_flag(p_rmse_mwu),
+                "n_users_niche_ndcg": int(len(niche_ndcg)),
+                "n_users_mainstream_ndcg": int(len(main_ndcg)),
+                "p_mwu_ndcg_niche_vs_mainstream": p_ndcg_mwu,
+                "p_welch_ndcg_niche_vs_mainstream": p_ndcg_welch,
+                "p_mwu_ndcg_niche_less_mainstream": p_ndcg_niche_less,
+                "sig_ndcg_mwu_005": significance_flag(p_ndcg_mwu),
             }
         )
     fairness_df = pd.DataFrame(rows_out).sort_values("model")

@@ -1,0 +1,56 @@
+\begin{thebibliography}{7}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Abdollahpouri et~al.(2017)Abdollahpouri, Burke, and
+  Mobasher]{abdollahpouri2017controlling}
+Himan Abdollahpouri, Robin Burke, and Bamshad Mobasher.
+\newblock Controlling popularity bias in learning-to-rank recommendation.
+\newblock In \emph{Proceedings of the Eleventh ACM Conference on Recommender
+  Systems}, pages 42--46, 2017.
+
+\bibitem[Abdollahpouri et~al.(2019)Abdollahpouri, Mansoury, Burke, and
+  Mobasher]{abdollahpouri2019unfairness}
+Himan Abdollahpouri, Majid Mansoury, Robin Burke, and Bamshad Mobasher.
+\newblock The unfairness of popularity bias in recommendation.
+\newblock In \emph{CEUR Workshop Proceedings}, volume 2440, 2019.
+
+\bibitem[Cantador et~al.(2011)Cantador, Brusilovsky, and
+  Kuflik]{cantador2011second}
+Iv{\'a}n Cantador, Peter Brusilovsky, and Tsvi Kuflik.
+\newblock Second recsys challenge.
+\newblock In \emph{Proceedings of the Fifth ACM Conference on Recommender
+  Systems}, pages 341--342, 2011.
+
+\bibitem[Harper and Konstan(2015)]{harper2015movielens}
+F.~Maxwell Harper and Joseph~A. Konstan.
+\newblock The movielens datasets: History and context.
+\newblock \emph{ACM Transactions on Interactive Intelligent Systems (TiiS)},
+  5\penalty0 (4):\penalty0 1--19, 2015.
+
+\bibitem[Hug(2020)]{hug2020surprise}
+Nicolas Hug.
+\newblock Surprise: A python library for recommender systems.
+\newblock \emph{Journal of Open Source Software}, 5\penalty0 (52):\penalty0
+  2174, 2020.
+
+\bibitem[Mansoury et~al.(2020)Mansoury, Abdollahpouri, Pechenizkiy, Mobasher,
+  and Burke]{mansoury2020feedback}
+Majid Mansoury, Himan Abdollahpouri, Mykola Pechenizkiy, Bamshad Mobasher, and
+  Robin Burke.
+\newblock Feedback loop and bias amplification in recommender systems.
+\newblock In \emph{Proceedings of the 29th ACM International Conference on
+  Information \& Knowledge Management}, pages 2145--2148, 2020.
+
+\bibitem[Ziegler et~al.(2005)Ziegler, McNee, Bariatakis, and
+  Konstan]{ziegler2005improving}
+Cai-Nicolas Ziegler, Sean~M. McNee, Joseph~A. Bariatakis, and Joseph~A.
+  Konstan.
+\newblock Improving recommendation lists through topic diversification.
+\newblock In \emph{Proceedings of the 14th International Conference on World
+  Wide Web}, pages 22--32, 2005.
+
+\end{thebibliography}

@@ -264,7 +264,7 @@ Executed copies appear under **`outputs/executed_notebooks/`**.
 | File pattern | Content |
 |--------------|---------|
 | `macro_bias_metrics_<dataset>.csv` | Per model: Gini, ARP, coverage, Spearman, percentiles, tail share, diversity, entropy, RMSE (if computed) |
-| `user_centric_metrics_<dataset>.csv` | Per model: RMSE/NDCG by Niche/Diverse/Mainstream, ΔRMSE niche−mainstream |
+| `user_centric_metrics_<dataset>.csv` | Per model: RMSE/NDCG by Niche/Diverse/Mainstream, ΔRMSE niche−mainstream; Mann–Whitney / Welch *p*-values on **per-user** RMSE and NDCG (Niche vs Mainstream), plus `sig_*_mwu_005` flags |
 | `feedback_simulation_metrics_<dataset>.csv` | Per iteration: SVD vs TF‑IDF aggregate diversity and ARP |
 | `combined_*.csv` | After `run_all_datasets.py`: stacked metrics across datasets |
 

@@ -1,0 +1,70 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{abdollahpouri2017controlling}
+\citation{abdollahpouri2019unfairness}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Context and Motivation}{1}{subsection.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}Research Objectives}{1}{subsection.1.2}\protected@file@percent }
+\citation{harper2015movielens}
+\citation{cantador2011second}
+\citation{ziegler2005improving}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.3}Scope and Contributions}{2}{subsection.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Methodology}{2}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Research Design Overview}{2}{subsection.2.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Three-phase empirical design: macro bias metrics, segment-wise accuracy and ranking, then iterative retraining under a stochastic click model.}}{2}{figure.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:pipeline}{{1}{2}{Three-phase empirical design: macro bias metrics, segment-wise accuracy and ranking, then iterative retraining under a stochastic click model}{figure.caption.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Datasets and Preprocessing}{2}{subsection.2.2}\protected@file@percent }
+\citation{hug2020surprise}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Corpora used in the cross-domain comparison (after preprocessing where applicable).}}{3}{table.caption.2}\protected@file@percent }
+\newlabel{tab:datasets}{{1}{3}{Corpora used in the cross-domain comparison (after preprocessing where applicable)}{table.caption.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Graph filtering.}{3}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Algorithmic Baselines}{3}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Experimental Protocol}{3}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.1}Experiment A: Macro Bias Quantification}{3}{subsubsection.2.4.1}\protected@file@percent }
+\citation{mansoury2020feedback}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.2}Experiment B: User-Centric Fairness (The ``Niche Tax'')}{4}{subsubsection.2.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Methodological critique (the RMSE artifact).}{4}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.3}Experiment C: Longitudinal Feedback Simulation}{4}{subsubsection.2.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Stochastic user choice model.}{4}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Results}{4}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Macro-Level Bias Quantification}{4}{subsection.3.1}\protected@file@percent }
+\newlabel{fig:macro-gini}{{2a}{5}{Gini coefficient on recommendation frequency (model $\times $ dataset)}{figure.caption.6}{}}
+\newlabel{sub@fig:macro-gini}{{a}{5}{Gini coefficient on recommendation frequency (model $\times $ dataset)}{figure.caption.6}{}}
+\newlabel{fig:macro-cov}{{2b}{5}{Catalog coverage of recommended items (model $\times $ dataset)}{figure.caption.6}{}}
+\newlabel{sub@fig:macro-cov}{{b}{5}{Catalog coverage of recommended items (model $\times $ dataset)}{figure.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Macro-level exposure inequality and coverage across benchmarks (including Takealot). Darker cells in the Gini heatmap indicate stronger concentration on a few items.}}{5}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:macro-heatmaps}{{2}{5}{Macro-level exposure inequality and coverage across benchmarks (including Takealot). Darker cells in the Gini heatmap indicate stronger concentration on a few items}{figure.caption.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Representative macro-bias values: ALS vs.\ Logistic Regression (values from the experimental run underlying this thesis).}}{5}{table.caption.7}\protected@file@percent }
+\newlabel{tab:macro-numbers}{{2}{5}{Representative macro-bias values: ALS vs.\ Logistic Regression (values from the experimental run underlying this thesis)}{table.caption.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{Collaborative Concentration.}{5}{section*.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Content-Based Dispersion.}{5}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}User-Centric Fairness (The Niche Tax)}{5}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Neighborhood Penalties.}{5}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The Latent Space Anomaly.}{5}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Ranking in Sparse Domains.}{5}{section*.14}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Fairness gap $\Delta \mathrm  {RMSE} = \mathrm  {RMSE}_{\text  {niche}} - \mathrm  {RMSE}_{\text  {mainstream}}$ by dataset and model. Positive values indicate higher error for niche users. Note that content models that fall back to a global mean for rating prediction can show flat $\Delta \mathrm  {RMSE}$; segment NDCG should be read alongside this chart.}}{6}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:fairness-gap}{{3}{6}{Fairness gap $\Delta \mathrm {RMSE} = \mathrm {RMSE}_{\text {niche}} - \mathrm {RMSE}_{\text {mainstream}}$ by dataset and model. Positive values indicate higher error for niche users. Note that content models that fall back to a global mean for rating prediction can show flat $\Delta \mathrm {RMSE}$; segment NDCG should be read alongside this chart}{figure.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces RMSE by user segment (Niche vs.\ Mainstream) across datasets and models.}}{6}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:rmse-segment}{{4}{6}{RMSE by user segment (Niche vs.\ Mainstream) across datasets and models}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Temporal Feedback Dynamics}{7}{subsection.3.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Feedback simulation: aggregate diversity (unique recommended items) and ARP over five iterations for SVD and TF-IDF, by dataset. Trajectories illustrate how collaborative vs.\ content-based models respond to synthetic clicks.}}{7}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:feedback-diversity}{{5}{7}{Feedback simulation: aggregate diversity (unique recommended items) and ARP over five iterations for SVD and TF-IDF, by dataset. Trajectories illustrate how collaborative vs.\ content-based models respond to synthetic clicks}{figure.caption.15}{}}
+\@writefile{toc}{\contentsline {paragraph}{Popularity Creep.}{7}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Content Resilience.}{7}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Discussion and Conclusion}{7}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Synthesis of Findings}{7}{subsection.4.1}\protected@file@percent }
+\bibstyle{plainnat}
+\bibdata{references}
+\bibcite{abdollahpouri2017controlling}{{1}{2017}{{Abdollahpouri et~al.}}{{Abdollahpouri, Burke, and Mobasher}}}
+\bibcite{abdollahpouri2019unfairness}{{2}{2019}{{Abdollahpouri et~al.}}{{Abdollahpouri, Mansoury, Burke, and Mobasher}}}
+\bibcite{cantador2011second}{{3}{2011}{{Cantador et~al.}}{{Cantador, Brusilovsky, and Kuflik}}}
+\bibcite{harper2015movielens}{{4}{2015}{{Harper and Konstan}}{{}}}
+\bibcite{hug2020surprise}{{5}{2020}{{Hug}}{{}}}
+\bibcite{mansoury2020feedback}{{6}{2020}{{Mansoury et~al.}}{{Mansoury, Abdollahpouri, Pechenizkiy, Mobasher, and Burke}}}
+\bibcite{ziegler2005improving}{{7}{2005}{{Ziegler et~al.}}{{Ziegler, McNee, Bariatakis, and Konstan}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Limitations and Future Work}{8}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Conclusion}{8}{subsection.4.3}\protected@file@percent }
+\gdef \@abspage@last{8}

@@ -1,9 +1,11 @@
-# LaTeX thesis — local/build outputs and sources kept out of repo
+# LaTeX — all sources and PDFs
+*.tex
+*.pdf
+
+# LaTeX thesis — local/build outputs
 thesis.aux
 thesis.bbl
 thesis.blg
 references.bib
 thesis.fdb_latexmk
-thesis.pdf
-thesis.tex
 thesis.synctex.gz
