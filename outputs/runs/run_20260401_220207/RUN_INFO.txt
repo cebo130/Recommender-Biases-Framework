@@ -1,0 +1,4 @@
+run_label=run_20260401_220207
+dataset=ml-100k
+test_size=0.2
+started=2026-04-01T22:02:07

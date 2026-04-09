@@ -44,6 +44,11 @@ This file is the **long-form** companion to the root [README.md](../README.md). 
 
 **Shared code:** `src/utils.py` (loaders, optional k-core, `metadata_text` construction). **Orchestration:** `run_all.py`, `run_all_datasets.py`, `run_takealot_full.py`.
 
+### MovieLens 100K only: SVD post-processing re-rank
+
+For **`ml-100k`** only, after fitting Surprise **SVD**, the pipeline also builds **`SVD+Rerank`**: take the top **50** items by predicted rating, min–max normalize predictions within that pool, min–max normalize **global** training interaction counts to \([0,1]\), score  
+\(\lambda \hat{R}_{norm} - (1-\lambda) P_{norm}\) with **λ = 0.8**, then output the top **10**. Same underlying SVD **RMSE** as plain SVD; macro-bias and user-centric **NDCG** tables gain an extra row for comparison. This penalizes popularity regardless of *why* an item is popular (see discussion of relevance–diversity trade-offs in your write-up).
+
 ---
 
 ## Repository layout
@@ -80,6 +85,7 @@ Thesis_Research/
 └── outputs/
     ├── figures/
     ├── results/
+    ├── runs/                 # optional per-experiment folders (--run-label)
     └── executed_notebooks/
 ```
 
@@ -203,6 +209,10 @@ Executes `01`–`03` with `DATASET_NAME` injected; writes to `outputs/executed_n
 ```bash
 python run_notebooks.py --dataset ml-100k
 ```
+
+### Isolated output directories
+
+`run_all.py`, `run_all_datasets.py`, and `run_takealot_full.py` accept **`--run-label NAME`** (writes under **`outputs/runs/NAME/figures`** and **`outputs/runs/NAME/results`**) or **`--run-label-timestamp`** (folder `run_YYYYMMDD_HHMMSS`). A small **`RUN_INFO.txt`** is written in the run root. Default behavior (no flags) remains **`outputs/figures`** and **`outputs/results`**.
 
 ---
 

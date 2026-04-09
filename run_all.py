@@ -48,7 +48,10 @@ from statistical_tests import (  # noqa: E402
     significance_flag,
     welch_ttest_pvalue,
 )
-from utils import ensure_output_dirs, load_dataset  # noqa: E402
+from utils import ensure_output_dirs, load_dataset, safe_run_label  # noqa: E402
+
+# Full-catalog SVD scoring + popularity penalty re-rank (see recommend_svd_popularity_rerank).
+_DATASETS_WITH_SVD_POPULARITY_RERANK = frozenset({"ml-100k", "take-a-lot-dataset"})
 
 
 def _format_duration(seconds: float) -> str:
@@ -139,6 +142,61 @@ def recommend_with_surprise(algo, users, user_seen, all_items, k: int = 10) -> d
         scored = [(it, _est(algo.predict(u, it))) for it in candidates]
         scored.sort(key=lambda x: x[1], reverse=True)
         recs[u] = [it for it, _ in scored[:k]]
+    return recs
+
+
+def global_popularity_minmax_map(train_pop: pd.Series) -> dict:
+    """
+    Map item_id -> [0, 1] from training interaction counts (higher = more popular / larger penalty).
+    """
+    vc = train_pop.astype(float)
+    lo = float(vc.min())
+    hi = float(vc.max())
+    span = hi - lo + 1e-12
+    return {str(it): (float(c) - lo) / span for it, c in vc.items()}
+
+
+def recommend_svd_popularity_rerank(
+    algo,
+    users,
+    user_seen,
+    all_items,
+    pop_norm_by_item: dict,
+    pool_k: int = 50,
+    out_k: int = 10,
+    lambda_param: float = 0.8,
+) -> dict:
+    """
+    Post-processing debiasing: take top ``pool_k`` items by predicted rating, re-rank with
+    Score_adj = λ * R_hat_norm - (1-λ) * P_norm, then keep top ``out_k``.
+    R_hat_norm is min-max within the pool per user; P_norm is global train-count min-max.
+    """
+    def _est(pred_obj):
+        return pred_obj.est if hasattr(pred_obj, "est") else float(pred_obj)
+
+    recs = {}
+    desc = f"SVD+Rerank (pool={pool_k}, lambda={lambda_param})"
+    for u in tqdm(users, desc=desc):
+        seen = user_seen.get(u, set())
+        candidates = [i for i in all_items if i not in seen]
+        scored = [(it, _est(algo.predict(u, it))) for it in candidates]
+        scored.sort(key=lambda x: x[1], reverse=True)
+        pool = scored[: min(pool_k, len(scored))]
+        if not pool:
+            recs[u] = []
+            continue
+        raw_scores = [s for _, s in pool]
+        rs_min, rs_max = min(raw_scores), max(raw_scores)
+        rs_span = rs_max - rs_min + 1e-12
+        reranked = []
+        for it, sc in pool:
+            norm_r = (sc - rs_min) / rs_span
+            key = str(it)
+            pop_p = float(pop_norm_by_item.get(str(it), 0.0))
+            adj = lambda_param * norm_r - (1.0 - lambda_param) * pop_p
+            reranked.append((it, adj))
+        reranked.sort(key=lambda x: x[1], reverse=True)
+        recs[u] = [it for it, _ in reranked[:out_k]]
     return recs
 
 
@@ -426,6 +484,20 @@ def run_macro_bias(
     svd.fit(trainset)
     model_recs["SVD"] = recommend_with_surprise(svd, users_test, user_seen, all_items, k=10)
     model_rmse["SVD"] = rmse_surprise(svd, test_df)
+    # ml-100k / Takealot: post-process SVD top-50 → popularity-penalty re-rank → top-10
+    if dataset_name in _DATASETS_WITH_SVD_POPULARITY_RERANK and SURPRISE_AVAILABLE:
+        pop_norm_map = global_popularity_minmax_map(train_pop)
+        model_recs["SVD+Rerank"] = recommend_svd_popularity_rerank(
+            svd,
+            users_test,
+            user_seen,
+            all_items,
+            pop_norm_map,
+            pool_k=50,
+            out_k=10,
+            lambda_param=0.8,
+        )
+        model_rmse["SVD+Rerank"] = model_rmse["SVD"]
     del svd
     gc.collect()
 
@@ -556,9 +628,15 @@ def run_macro_bias(
 
     plot_df = pd.concat(plot_rows, ignore_index=True)
     plot_df = plot_df[(plot_df["train_pop"] > 0) & (plot_df["rec_freq"] > 0)].copy()
-    fig, axes = plt.subplots(2, 3, figsize=(18, 10), sharex=True, sharey=True)
-    axes = axes.flatten()
-    for ax, model_name in zip(axes, sorted(model_recs.keys())):
+    model_keys = sorted(model_recs.keys())
+    n_m = len(model_keys)
+    ncols = 3
+    nrows = int(np.ceil(n_m / ncols))
+    fig, axes = plt.subplots(nrows, ncols, figsize=(6 * ncols, 4.5 * nrows), sharex=True, sharey=True)
+    axes = np.atleast_1d(axes).ravel()
+    for j in range(n_m, len(axes)):
+        axes[j].set_visible(False)
+    for ax, model_name in zip(axes[:n_m], model_keys):
         d = plot_df[plot_df["model"] == model_name]
         ax.scatter(d["train_pop"], d["rec_freq"], alpha=0.35, s=12)
         ax.set_xscale("log")
@@ -670,6 +748,19 @@ def run_user_centric(
             svd_preds.append((r.user_id, r.item_id, r.rating, est_predict(svd, r.user_id, r.item_id)))
         model_preds["SVD"] = svd_preds
         model_recs["SVD"] = recommend_with_surprise(svd, users_test, user_seen, all_items, k=10)
+        if dataset_name in _DATASETS_WITH_SVD_POPULARITY_RERANK and SURPRISE_AVAILABLE:
+            pop_norm_map = global_popularity_minmax_map(popularity_series(train_df))
+            model_recs["SVD+Rerank"] = recommend_svd_popularity_rerank(
+                svd,
+                users_test,
+                user_seen,
+                all_items,
+                pop_norm_map,
+                pool_k=50,
+                out_k=10,
+                lambda_param=0.8,
+            )
+            model_preds["SVD+Rerank"] = list(svd_preds)
         del svd
         gc.collect()
     except Exception as e:
@@ -1019,14 +1110,40 @@ def main():
         help="Dataset name under data/",
     )
     parser.add_argument("--test-size", type=float, default=0.2, help="Test split ratio (default 0.2)")
+    parser.add_argument(
+        "--run-label",
+        default=None,
+        metavar="NAME",
+        help="Write outputs under outputs/runs/NAME/figures and .../results (isolated from default outputs/).",
+    )
+    parser.add_argument(
+        "--run-label-timestamp",
+        action="store_true",
+        help="Auto run folder: outputs/runs/run_YYYYMMDD_HHMMSS/ (overrides --run-label if both given).",
+    )
     args = parser.parse_args()
 
-    out = ensure_output_dirs(ROOT)
+    wall_start = datetime.now()
+    run_label: Optional[str] = None
+    if args.run_label_timestamp:
+        run_label = wall_start.strftime("run_%Y%m%d_%H%M%S")
+    elif args.run_label:
+        run_label = safe_run_label(args.run_label)
+
+    out = ensure_output_dirs(ROOT, run_label=run_label)
     fig_dir = out["figures"]
     res_dir = out["results"]
     data_root = ROOT / "data"
 
-    wall_start = datetime.now()
+    if run_label:
+        info = out["run_root"] / "RUN_INFO.txt"
+        info.write_text(
+            f"run_label={run_label}\n"
+            f"dataset={args.dataset}\n"
+            f"test_size={args.test_size}\n"
+            f"started={wall_start.isoformat(timespec='seconds')}\n",
+            encoding="utf-8",
+        )
     t0 = time.perf_counter()
     n_phases = 3
 

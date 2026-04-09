@@ -98,8 +98,9 @@ Thesis_Research/
 │           └── test.csv
 │
 └── outputs/                           # Created when you run experiments
-    ├── figures/                       # PNG plots (macro, user-centric, feedback, combined)
-    ├── results/                       # CSV metrics per dataset + combined_*.csv
+    ├── figures/                       # Default PNG output (no --run-label)
+    ├── results/                       # Default CSV metrics + combined_*.csv
+    ├── runs/                          # Optional: --run-label → runs/<name>/{figures,results}, RUN_INFO.txt
     └── executed_notebooks/            # From run_notebooks.py
 ```
 
@@ -255,11 +256,27 @@ Executed copies appear under **`outputs/executed_notebooks/`**.
 
 **`--dataset` values (public):** `ml-100k`, `ml-1m`, `lastfm-2k`, `book-crossing`.
 
+### Isolated run folders (optional)
+
+To keep each experiment separate from the default `outputs/figures` and `outputs/results` tree:
+
+- **`--run-label NAME`** — writes to `outputs/runs/NAME/figures/` and `outputs/runs/NAME/results/` (plus `RUN_INFO.txt` in `outputs/runs/NAME/`).
+- **`--run-label-timestamp`** — same, with an auto folder name `run_YYYYMMDD_HHMMSS` (wins over `--run-label` if both are passed).
+
+Supported on **`run_all.py`**, **`run_all_datasets.py`**, and **`run_takealot_full.py`**. For batch runs, pass `--run-label` once; child processes receive it and combined CSVs/plots land in that run folder. With **`--skip-exec`**, use the **same** `--run-label` so aggregation reads the right `results/`.
+
+Example:
+
+```bash
+python run_all.py --dataset ml-100k --run-label ml100k_svd_rerank_v1
+python run_all.py --dataset ml-100k --run-label-timestamp
+```
+
 ---
 
 ## What gets produced
 
-### `outputs/results/`
+### `outputs/results/` (or `outputs/runs/<label>/results/`)
 
 | File pattern | Content |
 |--------------|---------|
@@ -270,7 +287,7 @@ Executed copies appear under **`outputs/executed_notebooks/`**.
 
 Takealot runs use `<dataset>` like **`take-a-lot-dataset`** in filenames.
 
-### `outputs/figures/`
+### `outputs/figures/` (or `outputs/runs/<label>/figures/`)
 
 Log–log popularity plots, extended metric bar charts, ECDFs, segment RMSE bars, feedback diversity lines, and **combined** heatmaps (when batch script completes).
 

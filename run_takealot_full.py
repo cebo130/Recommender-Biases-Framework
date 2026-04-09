@@ -9,6 +9,7 @@ where applicable; feedback sim uses SVD + TF-IDF only, same as run_all).
 Usage (from Thesis_Research):
   python run_takealot_full.py
   python run_takealot_full.py --data-dir data/take-a-lot-dataset
+  python run_takealot_full.py --output-root debiased_outputs
 """
 
 from __future__ import annotations
@@ -22,8 +23,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+SRC_DIR = ROOT / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
 from standalone_takealot.takealot_loader import load_takealot  # noqa: E402
+from utils import ensure_output_dirs, safe_run_label  # noqa: E402
 
 import run_all  # noqa: E402
 
@@ -56,6 +61,25 @@ def main() -> None:
         default="all",
         help="Ratings pool for feedback simulation: reviews.csv (all) or train split only.",
     )
+    parser.add_argument(
+        "--run-label",
+        default=None,
+        metavar="NAME",
+        help="Write outputs under outputs/runs/NAME/figures and .../results.",
+    )
+    parser.add_argument(
+        "--run-label-timestamp",
+        action="store_true",
+        help="Auto folder outputs/runs/run_YYYYMMDD_HHMMSS/ (overrides --run-label if both given).",
+    )
+    parser.add_argument(
+        "--output-root",
+        type=Path,
+        default=None,
+        metavar="DIR",
+        help="Write figures/ and results/ directly under DIR (e.g. debiased_outputs). "
+        "If set, overrides --run-label paths.",
+    )
     args = parser.parse_args()
 
     data_dir = args.data_dir
@@ -67,10 +91,39 @@ def main() -> None:
     if not (data_dir / "products.csv").is_file():
         raise FileNotFoundError(f"Missing products.csv under {data_dir}")
 
-    out = run_all.ensure_output_dirs(ROOT)
-    fig_dir = out["figures"]
-    res_dir = out["results"]
+    wall_start = datetime.now()
+    run_label = None
+    if args.output_root is None:
+        if args.run_label_timestamp:
+            run_label = wall_start.strftime("run_%Y%m%d_%H%M%S")
+        elif args.run_label:
+            run_label = safe_run_label(args.run_label)
+
+    if args.output_root is not None:
+        run_root = args.output_root.expanduser().resolve()
+        run_root.mkdir(parents=True, exist_ok=True)
+        fig_dir = run_root / "figures"
+        res_dir = run_root / "results"
+        fig_dir.mkdir(parents=True, exist_ok=True)
+        res_dir.mkdir(parents=True, exist_ok=True)
+        out = {"figures": fig_dir, "results": res_dir, "run_root": run_root}
+    else:
+        out = ensure_output_dirs(ROOT, run_label=run_label)
+        fig_dir = out["figures"]
+        res_dir = out["results"]
     data_root = ROOT / "data"
+
+    if run_label is not None or args.output_root is not None:
+        info_lines = [
+            f"dataset=take-a-lot-dataset",
+            f"feedback_pool={args.feedback_pool}",
+            f"started={wall_start.isoformat(timespec='seconds')}",
+        ]
+        if run_label is not None:
+            info_lines.insert(0, f"run_label={run_label}")
+        if args.output_root is not None:
+            info_lines.insert(0, f"output_root={out['run_root']}")
+        out["run_root"].joinpath("RUN_INFO.txt").write_text("\n".join(info_lines) + "\n", encoding="utf-8")
 
     print(f"Takealot data dir: {data_dir}")
     print("Loading train / test / item features...")
@@ -88,13 +141,12 @@ def main() -> None:
     print(f"  Figures: {fig_dir}")
     print(f"  Results: {res_dir}")
 
-    wall_start = datetime.now()
     t0 = time.perf_counter()
     n_phases = 3
 
     print(f"Run started: {wall_start.isoformat(timespec='seconds')}")
     print(
-        f">>> OVERALL PROGRESS: {0.0:.1f}% | Takealot — three experiments (macro → user-centric → feedback)"
+        f">>> OVERALL PROGRESS: {0.0:.1f}% | Takealot - three experiments (macro -> user-centric -> feedback)"
     )
 
     pre = (train_df, test_df)

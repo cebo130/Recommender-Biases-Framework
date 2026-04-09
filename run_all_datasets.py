@@ -1,8 +1,10 @@
 import argparse
 import subprocess
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -10,10 +12,13 @@ import seaborn as sns
 
 
 ROOT = Path(__file__).resolve().parent
+SRC_DIR = ROOT / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+from utils import ensure_output_dirs, safe_run_label  # noqa: E402
+
 FIG_DIR = ROOT / "outputs" / "figures"
 RES_DIR = ROOT / "outputs" / "results"
-FIG_DIR.mkdir(parents=True, exist_ok=True)
-RES_DIR.mkdir(parents=True, exist_ok=True)
 
 ALL_DATASETS = ["ml-100k", "ml-1m", "lastfm-2k", "book-crossing"]
 
@@ -29,8 +34,10 @@ def _format_duration(seconds: float) -> str:
     return f"{hours}h {minutes}m {sec}s"
 
 
-def run_per_dataset(dataset: str, test_size: float):
+def run_per_dataset(dataset: str, test_size: float, run_label: Optional[str]):
     cmd = ["python", str(ROOT / "run_all.py"), "--dataset", dataset, "--test-size", str(test_size)]
+    if run_label:
+        cmd += ["--run-label", run_label]
     print(f"Running: {' '.join(cmd)}")
     subprocess.run(cmd, cwd=str(ROOT), check=True)
 
@@ -184,9 +191,40 @@ def main():
         action="store_true",
         help="Skip executing per-dataset runs; only aggregate/plot existing CSVs.",
     )
+    parser.add_argument(
+        "--run-label",
+        default=None,
+        metavar="NAME",
+        help="Per-dataset runs and combined CSVs/plots go under outputs/runs/NAME/.",
+    )
+    parser.add_argument(
+        "--run-label-timestamp",
+        action="store_true",
+        help="Auto folder outputs/runs/run_YYYYMMDD_HHMMSS/ (overrides --run-label if both given).",
+    )
     args = parser.parse_args()
 
+    global FIG_DIR, RES_DIR
     wall_start = datetime.now()
+    run_label: Optional[str] = None
+    if args.run_label_timestamp:
+        run_label = wall_start.strftime("run_%Y%m%d_%H%M%S")
+    elif args.run_label:
+        run_label = safe_run_label(args.run_label)
+
+    out = ensure_output_dirs(ROOT, run_label=run_label)
+    FIG_DIR = out["figures"]
+    RES_DIR = out["results"]
+    if run_label:
+        out["run_root"].joinpath("RUN_INFO.txt").write_text(
+            f"run_label={run_label}\n"
+            f"mode=run_all_datasets\n"
+            f"datasets={','.join(args.datasets)}\n"
+            f"test_size={args.test_size}\n"
+            f"skip_exec={args.skip_exec}\n"
+            f"started={wall_start.isoformat(timespec='seconds')}\n",
+            encoding="utf-8",
+        )
     t0 = time.perf_counter()
     datasets = list(args.datasets)
     n_ds = len(datasets)
@@ -207,7 +245,7 @@ def main():
                 f"    Elapsed: {_format_duration(time.perf_counter() - t0)}\n"
                 f"{'=' * 72}"
             )
-            run_per_dataset(ds, test_size=args.test_size)
+            run_per_dataset(ds, test_size=args.test_size, run_label=run_label)
             pct_after = 100.0 * DATASET_FRACTION * ((i + 1) / n_ds)
             print(
                 f">>> OVERALL PROGRESS: {pct_after:.1f}% | finished {ds} ({i + 1}/{n_ds})\n"

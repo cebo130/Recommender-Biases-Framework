@@ -1,4 +1,5 @@
 import gc
+import re
 from pathlib import Path
 from typing import Dict, Literal, Optional, Tuple
 
@@ -9,13 +10,31 @@ import pandas as pd
 DatasetName = Literal["ml-100k", "ml-1m", "lastfm-2k", "book-crossing"]
 
 
-def ensure_output_dirs(base_dir: str | Path = ".") -> Dict[str, Path]:
+def safe_run_label(name: str) -> str:
+    """Filesystem-safe folder name under outputs/runs/."""
+    s = (name or "").strip()
+    s = re.sub(r'[<>:"|?*\\/]+', "_", s)
+    return s if s else "run"
+
+
+def ensure_output_dirs(base_dir: str | Path = ".", run_label: Optional[str] = None) -> Dict[str, Path]:
+    """
+    Create figures/ and results/ directories.
+
+    If ``run_label`` is set, paths are ``<base>/outputs/runs/<run_label>/{figures,results}``
+    so each experiment run stays isolated. Otherwise: ``<base>/outputs/{figures,results}``.
+    """
     root = Path(base_dir)
-    figures = root / "outputs" / "figures"
-    results = root / "outputs" / "results"
+    if run_label:
+        label = safe_run_label(run_label)
+        out_root = root / "outputs" / "runs" / label
+    else:
+        out_root = root / "outputs"
+    figures = out_root / "figures"
+    results = out_root / "results"
     figures.mkdir(parents=True, exist_ok=True)
     results.mkdir(parents=True, exist_ok=True)
-    return {"figures": figures, "results": results}
+    return {"figures": figures, "results": results, "run_root": out_root}
 
 
 def reduce_memory(df: pd.DataFrame) -> pd.DataFrame:
