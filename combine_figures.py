@@ -2,17 +2,18 @@
 """
 Combine all raster images under a folder into one grid PNG (e.g. for LLM analysis).
 
-Default folder matches this project: outputs/figures/
+Default folder matches this project: More_Outputs/figures/
 
 Usage:
   python combine_figures.py
-  python combine_figures.py --dir outputs/figures --out outputs/figures/all_figures_montage.png
+  python combine_figures.py --dir More_Outputs/figures --out More_Outputs/figures/all_figures_montage.png
 """
 
 from __future__ import annotations
 
 import argparse
 import math
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -20,6 +21,14 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+
+_ROOT = Path(__file__).resolve().parent
+_SRC = _ROOT / "src"
+if str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
+from utils import default_output_parent  # noqa: E402
+
+_DEFAULT_FIGURES = _ROOT / default_output_parent() / "figures"
 
 IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".tif", ".tiff", ".bmp"}
 
@@ -39,8 +48,8 @@ def main() -> None:
     parser.add_argument(
         "--dir",
         type=Path,
-        default=Path("outputs/figures"),
-        help="Folder containing images (default: outputs/figures)",
+        default=_DEFAULT_FIGURES,
+        help="Folder containing images (default: <repo>/More_Outputs/figures)",
     )
     parser.add_argument(
         "--out",

@@ -65,12 +65,12 @@ def main() -> None:
         "--run-label",
         default=None,
         metavar="NAME",
-        help="Write outputs under outputs/runs/NAME/figures and .../results.",
+        help="Write outputs under More_Outputs/runs/NAME/figures and .../results.",
     )
     parser.add_argument(
         "--run-label-timestamp",
         action="store_true",
-        help="Auto folder outputs/runs/run_YYYYMMDD_HHMMSS/ (overrides --run-label if both given).",
+        help="Auto folder More_Outputs/runs/run_YYYYMMDD_HHMMSS/ (overrides --run-label if both given).",
     )
     parser.add_argument(
         "--output-root",
@@ -79,6 +79,11 @@ def main() -> None:
         metavar="DIR",
         help="Write figures/ and results/ directly under DIR (e.g. debiased_outputs). "
         "If set, overrides --run-label paths.",
+    )
+    parser.add_argument(
+        "--no-svd-mitigation-extras",
+        action="store_true",
+        help="Skip SVD pool baselines, rerank sensitivity CSV, and max-pool=100 cache (faster).",
     )
     args = parser.parse_args()
 
@@ -165,6 +170,7 @@ def main() -> None:
         args.test_size,
         pre_split=pre,
         item_features_override=item_features,
+        mitigations=not args.no_svd_mitigation_extras,
     )
     t1 = time.perf_counter()
     print(
@@ -187,6 +193,7 @@ def main() -> None:
         args.test_size,
         pre_split=pre,
         item_features_override=item_features,
+        mitigations=not args.no_svd_mitigation_extras,
     )
     t2 = time.perf_counter()
     print(

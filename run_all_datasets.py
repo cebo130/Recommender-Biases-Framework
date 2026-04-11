@@ -15,10 +15,10 @@ ROOT = Path(__file__).resolve().parent
 SRC_DIR = ROOT / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
-from utils import ensure_output_dirs, safe_run_label  # noqa: E402
+from utils import default_output_parent, ensure_output_dirs, safe_run_label  # noqa: E402
 
-FIG_DIR = ROOT / "outputs" / "figures"
-RES_DIR = ROOT / "outputs" / "results"
+FIG_DIR = ROOT / default_output_parent() / "figures"
+RES_DIR = ROOT / default_output_parent() / "results"
 
 ALL_DATASETS = ["ml-100k", "ml-1m", "lastfm-2k", "book-crossing"]
 
@@ -34,10 +34,14 @@ def _format_duration(seconds: float) -> str:
     return f"{hours}h {minutes}m {sec}s"
 
 
-def run_per_dataset(dataset: str, test_size: float, run_label: Optional[str]):
+def run_per_dataset(
+    dataset: str, test_size: float, run_label: Optional[str], *, no_svd_mitigation_extras: bool = False
+):
     cmd = ["python", str(ROOT / "run_all.py"), "--dataset", dataset, "--test-size", str(test_size)]
     if run_label:
         cmd += ["--run-label", run_label]
+    if no_svd_mitigation_extras:
+        cmd += ["--no-svd-mitigation-extras"]
     print(f"Running: {' '.join(cmd)}")
     subprocess.run(cmd, cwd=str(ROOT), check=True)
 
@@ -195,12 +199,17 @@ def main():
         "--run-label",
         default=None,
         metavar="NAME",
-        help="Per-dataset runs and combined CSVs/plots go under outputs/runs/NAME/.",
+        help="Per-dataset runs and combined CSVs/plots go under More_Outputs/runs/NAME/.",
     )
     parser.add_argument(
         "--run-label-timestamp",
         action="store_true",
-        help="Auto folder outputs/runs/run_YYYYMMDD_HHMMSS/ (overrides --run-label if both given).",
+        help="Auto folder More_Outputs/runs/run_YYYYMMDD_HHMMSS/ (overrides --run-label if both given).",
+    )
+    parser.add_argument(
+        "--no-svd-mitigation-extras",
+        action="store_true",
+        help="Forward to run_all.py: skip SVD pool baselines and rerank sensitivity CSV.",
     )
     args = parser.parse_args()
 
@@ -245,7 +254,12 @@ def main():
                 f"    Elapsed: {_format_duration(time.perf_counter() - t0)}\n"
                 f"{'=' * 72}"
             )
-            run_per_dataset(ds, test_size=args.test_size, run_label=run_label)
+            run_per_dataset(
+                ds,
+                test_size=args.test_size,
+                run_label=run_label,
+                no_svd_mitigation_extras=args.no_svd_mitigation_extras,
+            )
             pct_after = 100.0 * DATASET_FRACTION * ((i + 1) / n_ds)
             print(
                 f">>> OVERALL PROGRESS: {pct_after:.1f}% | finished {ds} ({i + 1}/{n_ds})\n"

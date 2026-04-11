@@ -1,5 +1,6 @@
 import argparse
 import re
+import sys
 from pathlib import Path
 
 import nbformat
@@ -7,8 +8,13 @@ from nbconvert.preprocessors import ExecutePreprocessor
 
 
 ROOT = Path(__file__).resolve().parent
+SRC_DIR = ROOT / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+from utils import default_output_parent  # noqa: E402
+
 NB_DIR = ROOT / "notebooks"
-EXEC_DIR = ROOT / "outputs" / "executed_notebooks"
+EXEC_DIR = ROOT / default_output_parent() / "executed_notebooks"
 EXEC_DIR.mkdir(parents=True, exist_ok=True)
 
 

@@ -1,21 +1,30 @@
 #!/usr/bin/env python3
 """
-Bundle all CSV files under outputs/results/ into one file for sharing (e.g. with an LLM).
+Bundle all CSV files under More_Outputs/results/ into one file for sharing (e.g. with an LLM).
 
 Default: Markdown with one section per CSV (readable and easy to cite).
 Optional: one concatenated CSV with a leading source_file column (union of columns; NaN where absent).
 
 Usage:
   python3 combine_results.py
-  python3 combine_results.py --format csv --out outputs/results/combined_all_metrics.csv
+  python3 combine_results.py --format csv --out More_Outputs/results/combined_all_metrics.csv
 """
 
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 import pandas as pd
+
+_ROOT = Path(__file__).resolve().parent
+_SRC = _ROOT / "src"
+if str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
+from utils import default_output_parent  # noqa: E402
+
+_DEFAULT_RESULTS = _ROOT / default_output_parent() / "results"
 
 
 def collect_csvs(folder: Path, skip_names: set[str], skip_combined_prefix: bool) -> list[Path]:
@@ -35,7 +44,7 @@ def write_markdown(paths: list[Path], out_path: Path) -> None:
     lines: list[str] = [
         "# Combined results (CSV bundle)",
         "",
-        "Each section is one source file from `outputs/results/`.",
+        "Each section is one source file from `More_Outputs/results/` (or your --dir).",
         "",
     ]
     for p in paths:
@@ -64,8 +73,8 @@ def main() -> None:
     parser.add_argument(
         "--dir",
         type=Path,
-        default=Path("outputs/results"),
-        help="Folder containing CSVs (default: outputs/results)",
+        default=_DEFAULT_RESULTS,
+        help="Folder containing CSVs (default: <repo>/More_Outputs/results)",
     )
     parser.add_argument(
         "--out",

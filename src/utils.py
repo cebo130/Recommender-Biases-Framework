@@ -1,4 +1,5 @@
 import gc
+import os
 import re
 from pathlib import Path
 from typing import Dict, Literal, Optional, Tuple
@@ -9,27 +10,43 @@ import pandas as pd
 
 DatasetName = Literal["ml-100k", "ml-1m", "lastfm-2k", "book-crossing"]
 
+# Default directory under ``base_dir`` for figures/results (override with env THESIS_OUTPUT_PARENT).
+DEFAULT_OUTPUT_PARENT_NAME = "More_Outputs"
+
 
 def safe_run_label(name: str) -> str:
-    """Filesystem-safe folder name under outputs/runs/."""
+    """Filesystem-safe folder name under <output_parent>/runs/."""
     s = (name or "").strip()
     s = re.sub(r'[<>:"|?*\\/]+', "_", s)
     return s if s else "run"
 
 
-def ensure_output_dirs(base_dir: str | Path = ".", run_label: Optional[str] = None) -> Dict[str, Path]:
+def default_output_parent() -> Path:
+    """Relative path segment under the project root for experiment outputs."""
+    return Path(os.environ.get("THESIS_OUTPUT_PARENT", DEFAULT_OUTPUT_PARENT_NAME))
+
+
+def ensure_output_dirs(
+    base_dir: str | Path = ".",
+    run_label: Optional[str] = None,
+    *,
+    output_parent: Optional[str | Path] = None,
+) -> Dict[str, Path]:
     """
     Create figures/ and results/ directories.
 
-    If ``run_label`` is set, paths are ``<base>/outputs/runs/<run_label>/{figures,results}``
-    so each experiment run stays isolated. Otherwise: ``<base>/outputs/{figures,results}``.
+    If ``run_label`` is set, paths are ``<base>/<output_parent>/runs/<run_label>/{figures,results}``
+    so each experiment run stays isolated. Otherwise: ``<base>/<output_parent>/{figures,results}``.
+
+    ``output_parent`` defaults to env ``THESIS_OUTPUT_PARENT`` or ``More_Outputs``.
     """
     root = Path(base_dir)
+    parent = Path(output_parent) if output_parent is not None else default_output_parent()
     if run_label:
         label = safe_run_label(run_label)
-        out_root = root / "outputs" / "runs" / label
+        out_root = root / parent / "runs" / label
     else:
-        out_root = root / "outputs"
+        out_root = root / parent
     figures = out_root / "figures"
     results = out_root / "results"
     figures.mkdir(parents=True, exist_ok=True)

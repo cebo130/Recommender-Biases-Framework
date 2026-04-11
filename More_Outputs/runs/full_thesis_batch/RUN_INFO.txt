@@ -1,0 +1,4 @@
+run_label=full_thesis_batch
+dataset=book-crossing
+test_size=0.2
+started=2026-04-11T03:41:51
